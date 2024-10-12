@@ -1,35 +1,69 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/K-Road/rss_feed_aggregator/internal/config"
 )
 
+type state struct {
+	cfg *config.Config
+}
+
 func main() {
-	err := godotenv.Load()
+	cfg, err := config.GetConfig()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("error reading config: %v", err)
 	}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("PORT env not set")
+	programState := &state{
+		cfg: &cfg,
 	}
 
-	mux := http.NewServeMux()
-	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: mux,
+	cliCommands := &commands{
+		registeredCommands: make(map[string]func(*state, command) error),
 	}
 
-	mux.HandleFunc("GET /v1/healthz", handlerhealthz)
-	mux.HandleFunc("GET /v1/err", handlererr)
+	cliCommands.register("login", handlerLogin)
 
-	if err := srv.ListenAndServe(); err != nil {
-		fmt.Println("Server failed:", err)
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
 	}
+	commandName := os.Args[1]
+	args := os.Args[2:]
+
+	err = cliCommands.run(programState, command{Name: commandName, Arguments: args})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// cfg, err = config.GetConfig()
+	// if err != nil {
+	// 	log.Fatalf("error reading config: %v", err)
+	// }
+	// fmt.Printf("Read config again: %+v\n", cfg)
+
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+
+	// port := os.Getenv("PORT")
+	// if port == "" {
+	// 	log.Fatal("PORT env not set")
+	// }
+
+	// mux := http.NewServeMux()
+	// srv := &http.Server{
+	// 	Addr:    ":" + port,
+	// 	Handler: mux,
+	// }
+
+	// mux.HandleFunc("GET /v1/healthz", handlerhealthz)
+	// mux.HandleFunc("GET /v1/err", handlererr)
+
+	// if err := srv.ListenAndServe(); err != nil {
+	// 	fmt.Println("Server failed:", err)
+	// }
 }
