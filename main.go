@@ -1,13 +1,18 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
 	"github.com/K-Road/rss_feed_aggregator/internal/config"
+	"github.com/K-Road/rss_feed_aggregator/internal/database"
+
+	_ "github.com/lib/pq"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -16,16 +21,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatal("Error opening db")
+	}
+	dbQueries := database.New(db)
 
 	programState := &state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
-	cliCommands := &commands{
+	cliCommands := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
 
 	cliCommands.register("login", handlerLogin)
+	cliCommands.register("register", handlerRegister)
+	cliCommands.register("reset", handlerReset)
+	cliCommands.register("users", handlerUsers)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
