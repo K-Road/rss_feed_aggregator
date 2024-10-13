@@ -13,3 +13,8 @@ RETURNING *;
 -- name: GetFeeds :many
 SELECT *
 FROM feeds;
+
+-- name: GetFeedByURL :one
+SELECT *
+FROM feeds
+where feeds.url = $1;
