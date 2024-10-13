@@ -69,7 +69,7 @@ func handlerUsers(s *state, cmd command) error {
 
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("error: unable to delete: %w", err)
+		return fmt.Errorf("error: no user: %w", err)
 	}
 	for _, user := range users {
 		if user == s.cfg.CurrentUserName {
