@@ -9,15 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Arguments) != 1 {
 		return fmt.Errorf("usage: %v <url>", cmd.Name)
 	}
 
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
-	}
+	// user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	// if err != nil {
+	// 	return err
+	// }
 
 	url := cmd.Arguments[0]
 	now := time.Now().UTC()
@@ -43,15 +43,15 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerListFeedFollows(s *state, cmd command) error {
+func handlerListFeedFollows(s *state, cmd command, user database.User) error {
 	if len(cmd.Arguments) != 0 {
 		return fmt.Errorf("usage: %v", cmd.Name)
 	}
 
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
-	}
+	// user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	// if err != nil {
+	// 	return err
+	// }
 
 	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
@@ -73,4 +73,28 @@ func handlerListFeedFollows(s *state, cmd command) error {
 func printFeedFollow(username, feedname string) {
 	fmt.Printf("* User:          %s\n", username)
 	fmt.Printf("* Feed:          %s\n", feedname)
+}
+
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.Arguments) != 1 {
+		return fmt.Errorf("usage: %v <url>", cmd.Name)
+	}
+
+	url := cmd.Arguments[0]
+
+	feed, err := s.db.GetFeedByURL(context.Background(), url)
+	if err != nil {
+		return fmt.Errorf("counldn't get feed: %w", err)
+	}
+
+	err = s.db.DeleteFeedFollow(context.Background(), database.DeleteFeedFollowParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("couldn't delete feed follow: %w", err)
+	}
+	fmt.Printf("%s unfollow successful!\n", feed.Name)
+
+	return nil
 }

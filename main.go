@@ -41,10 +41,14 @@ func main() {
 	cliCommands.register("reset", handlerReset)
 	cliCommands.register("users", handlerUsers)
 	cliCommands.register("agg", handlerAgg)
-	cliCommands.register("addfeed", handlerAddFeed)
+	//cliCommands.register("addfeed", handlerAddFeed)
+	cliCommands.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	cliCommands.register("feeds", handlerListFeeds)
-	cliCommands.register("follow", handlerFollow)
-	cliCommands.register("following", handlerListFeedFollows)
+	//cliCommands.register("follow", handlerFollow)
+	//cliCommands.register("following", handlerListFeedFollows)
+	cliCommands.register("follow", middlewareLoggedIn(handlerFollow))
+	cliCommands.register("following", middlewareLoggedIn(handlerListFeedFollows))
+	cliCommands.register("unfollow", middlewareLoggedIn(handlerUnfollow))
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
@@ -56,33 +60,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// cfg, err = config.GetConfig()
-	// if err != nil {
-	// 	log.Fatalf("error reading config: %v", err)
-	// }
-	// fmt.Printf("Read config again: %+v\n", cfg)
-
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
-
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	log.Fatal("PORT env not set")
-	// }
-
-	// mux := http.NewServeMux()
-	// srv := &http.Server{
-	// 	Addr:    ":" + port,
-	// 	Handler: mux,
-	// }
-
-	// mux.HandleFunc("GET /v1/healthz", handlerhealthz)
-	// mux.HandleFunc("GET /v1/err", handlererr)
-
-	// if err := srv.ListenAndServe(); err != nil {
-	// 	fmt.Println("Server failed:", err)
-	// }
 }
