@@ -22,7 +22,7 @@ func handlerAgg(s *state, cmd command) error {
 		return fmt.Errorf("invalid duration: %w", err)
 	}
 
-	fmt.Printf("Collecting feeds every %s\n", time_between_reqs)
+	log.Printf("Collecting feeds every %s\n", time_between_reqs)
 
 	ticker := time.NewTicker(time_between_reqs)
 	for ; ; <-ticker.C {

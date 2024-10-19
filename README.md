@@ -1,10 +1,16 @@
 # Gator
 
-A multi-player command line tool for aggregating RSS feeds and viewing the posts.
+A multi-user command line tool for aggregating RSS feeds and viewing the posts. (boot.dev course)
+
+## Requirements
+Go Toolchain
+Postgres
+
+Make sure you have the latest [Go toolchain](https://golang.org/dl/) installed as well as a local Postgres database.
 
 ## Installation
 
-Make sure you have the latest [Go toolchain](https://golang.org/dl/) installed as well as a local Postgres database. You can then install `gator` with:
+Install `gator` with:
 
 ```bash
 go install ...
