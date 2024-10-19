@@ -4,6 +4,7 @@ A multi-user command line tool for aggregating RSS feeds and viewing the posts. 
 
 ## Requirements
 Go Toolchain
+
 Postgres
 
 Make sure you have the latest [Go toolchain](https://golang.org/dl/) installed as well as a local Postgres database.
