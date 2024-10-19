@@ -15,5 +15,3 @@ CREATE TABLE feeds (
 -- +goose Down
 DROP TABLE feeds;
 
---goose postgres postgres://postgres:postgres@localhost:5432/gator up
---goose postgres postgres://postgres:postgres@localhost:5432/gator down
